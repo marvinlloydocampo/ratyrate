@@ -32,9 +32,9 @@ module Helpers
 
     unless readOnly
       if disable_after_rate
-        readOnly = !(current_user && rateable_obj.can_rate?(current_user, dimension))
+        readOnly = !(current_student && rateable_obj.can_rate?(current_student, dimension))
       else
-        readOnly = !current_user || false
+        readOnly = !current_student || false
       end
     end
 
@@ -71,19 +71,19 @@ module Helpers
     end
   end
 
-  def imdb_style_rating_for(rateable_obj, user, options = {})
+  def imdb_style_rating_for(rateable_obj, student, options = {})
     #TODO: add option to change the star icon
-    overall_avg = rateable_obj.overall_avg(user)
+    overall_avg = rateable_obj.overall_avg(student)
 
     content_tag :div, '', :style => "background-image:url('#{image_path('big-star.png')}');width:81px;height:81px;margin-top:10px;" do
         content_tag :p, overall_avg, :style => "position:relative;line-height:85px;text-align:center;"
     end
   end
 
-  def rating_for_user(rateable_obj, rating_user, dimension = nil, options = {})
+  def rating_for_student(rateable_obj, rating_student, dimension = nil, options = {})
     @object = rateable_obj
-    @user   = rating_user
-	  @rating = Rate.find_by rater: @user, rateable: @object, dimension: dimension
+    @student   = rating_student
+	  @rating = Rate.find_by rater: @student, rateable: @object, dimension: dimension
 	  stars = @rating ? @rating.stars : 0
 
     star         = options[:star]         || 5
@@ -112,7 +112,7 @@ module Helpers
     disable_after_rate = options[:disable_after_rate] || false
 
     if disable_after_rate
-      readOnly = rating_user.present? ? !rateable_obj.can_rate?(rating_user, dimension) : true
+      readOnly = rating_student.present? ? !rateable_obj.can_rate?(rating_student, dimension) : true
     end
 
     content_tag :div, '', "data-dimension" => dimension, :class => "star", "data-rating" => stars,
